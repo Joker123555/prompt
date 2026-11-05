@@ -5,36 +5,50 @@
 
 ## 1. 这是什么
 
-（一句话说明这个项目为谁解决什么问题；生成后请替换本行）
+`prompt` 是提问体检工具 `qdoctor`：在把问题发给 AI 前，指出缺失的要素、给出追问清单与改写稿；支持复盘答非所问的对话、统计本地缺口。它不替用户写提示词，也不判断答案对错。
 
-技术栈：未指定。分档：S（S = 小仓，只靠目录与本文档；M = 加声明层与文档站；L = 全量治理）。
+技术栈：Python 3.12 标准库，零第三方依赖。分档：S（S = 小仓，只靠目录与本文档；M = 加声明层与文档站；L = 全量治理）。
 
 ## 2. 入口命令（唯一入口，别自己发明）
 
 <!-- blueprint:begin agents/entrypoints -->
 | 目的 | 命令 |
 |---|---|
-| 装依赖 | （未指定技术栈，请手工填写） |
-| 全量构建 | （未指定技术栈，请手工填写） |
-| 增量开发 | （未指定技术栈，请手工填写） |
-| 跑测试 | （未指定技术栈，请手工填写） |
-| 格式化/静态检查 | （未指定技术栈，请手工填写） |
+| 装依赖 | `python -c "import qdoctor"`（零依赖，验证包可导入） |
+| 全量构建 | `python -m compileall -q qdoctor`（无编译产物，做语法编译检查） |
+| 增量开发 | `python -m qdoctor serve` |
+| 跑测试 | `python -m unittest discover -s tests -t . -v` |
+| 格式化/静态检查 | `python tools/check_layers.py`（依赖方向与第三方依赖） |
 <!-- blueprint:end agents/entrypoints -->
 
-以上命令全部经过实测（生成时间 2026-11-05）。命令不存在时先怀疑环境，不要去改脚本绕过。
+以上命令全部经过实测（实测于 2026-11-05）。命令不存在时先怀疑环境，不要去改脚本绕过。
 
 ## 3. 目录与职责
 
 <!-- blueprint:begin agents/directories -->
-| docs/ | 文档入口与指南；不含代码 |
-| artifacts/ | 长命令输出；不进版本库 |
+| `qdoctor/` | 诊断、改写、复盘、历史、LLM 与入口；不含第三方依赖和构建产物 |
+| `qdoctor/static/` | 单页界面（HTML/CSS/JS）；不含业务规则 |
+| `tests/` | 与被测模块对应的单元/接口测试；不含生产逻辑 |
+| `tools/` | 仓库校验脚本；不含产品代码 |
+| `docs/` | 文档入口与指南；不含代码 |
+| `artifacts/` | 长命令输出；不进版本库 |
 <!-- blueprint:end agents/directories -->
 
 每个目录一句话：**拥有什么 + 不拥有什么**。想放代码时先回答"它属于哪个目录的职责"，答案不清楚说明该目录的边界需要重新讨论，不要把代码塞进最近的目录。
 
 ## 4. 依赖方向（硬约束）
 
-（按实际架构填写：谁可以依赖谁，哪些方向禁止）
+```
+qdoctor/static → qdoctor/web（入口）
+qdoctor/__main__ → 以下所有
+qdoctor/{diagnose,rewrite,review} → qdoctor/{model,rules}（领域）
+qdoctor/{history,llm} → qdoctor/{model,rules}（基础设施）
+```
+
+- 领域层（`model` / `rules` / `diagnose` / `rewrite` / `review`）不得导入 `history` / `llm` / `web` / `__main__`。
+- 基础设施（`history` / `llm`）不得导入 `web` / `__main__`。
+- 任何 `qdoctor/` 模块不得引入第三方依赖。
+- `tools/check_layers.py` 用 AST 检查以上三条；违反即 lint 失败。
 
 违反方向的 import 不接受，即使它"现在能跑"。
 
@@ -52,9 +66,9 @@
 
 ## 6. 测试
 
-- 改动必须带证据：跑 （未指定技术栈，请手工填写），贴出实际输出，再说"通过"。
+- 改动必须带证据：跑 `python -m unittest discover -s tests -t . -v` 和 `python tools/check_layers.py`，贴出实际输出，再说"通过"。
 - 修 bug 时先写一个能复现的失败测试，再修。
-- 测试放在 （按实际填写），与被测代码的目录结构对应。
+- 测试放在 `tests/`，与被测模块同名：`qdoctor/diagnose.py` 对应 `tests/test_diagnose.py`。
 
 ## 7. 文档
 
@@ -69,7 +83,10 @@
 
 ## 9. 已知陷阱
 
-（生成后请补充：这个项目里最容易踩的 3 个坑。踩过就写，没踩过留空。）
+- **Windows 控制台编码**：入口已统一 UTF-8；自己写脚本读文件时仍要显式 `encoding="utf-8"`，否则 cp936 会炸。
+- **端口占用**：`serve` 默认 8765；冲突时用 `--port 0` 自动选端口，或换一个端口，不要偷偷改默认值。
+- **LLM 默认关闭**：不设环境变量时 `--llm` 退出码是 1，但规则结果仍会完整输出；不要把 1 当成整个命令失败。
+- **历史不存原文**：`~/.qdoctor/history.jsonl` 只有分数、缺口和字符数；调试时不要断言"记录里能查到问题文本"。
 
 ## 10. 保持本文档有效
 

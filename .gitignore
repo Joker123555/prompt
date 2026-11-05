@@ -20,5 +20,9 @@ artifacts/
 .DS_Store
 Thumbs.db
 
+# 本地工具状态（会话计划、插件缓存）
+.zcode/
+.v2c/
+
 # blueprint 探明阶段的中间产物（profile.json 应提交，见下）
 .blueprint/scan/
