@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>提问体检 · qdoctor</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <p class="eyebrow">qdoctor</p>
+      <h1>提问体检</h1>
+      <p class="lede">把问题补齐，再问 AI。缺什么、该追问什么、改成什么样，一次说清。</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav class="tabs" role="tablist" aria-label="模式">
+      <button class="tab is-active" id="tab-check" role="tab" aria-selected="true" aria-controls="panel-check" data-tab="check">体检</button>
+      <button class="tab" id="tab-review" role="tab" aria-selected="false" aria-controls="panel-review" data-tab="review">复盘</button>
+      <button class="tab" id="tab-stats" role="tab" aria-selected="false" aria-controls="panel-stats" data-tab="stats">统计</button>
+    </nav>
+
+    <section class="panel is-active" id="panel-check" role="tabpanel" aria-labelledby="tab-check">
+      <form class="form" id="check-form" novalidate>
+        <label class="field" for="check-text">
+          <span class="field-label">你要问的问题</span>
+          <textarea id="check-text" rows="7" placeholder="例如：帮我优化一下这段代码，总觉得哪里不对。"></textarea>
+        </label>
+        <div class="actions">
+          <div class="llm-box">
+            <label class="check" for="check-llm"><input type="checkbox" id="check-llm" disabled> 用 LLM 润色改写稿</label>
+            <span class="hint" id="check-llm-hint">未配置 LLM；规则结果照常可用</span>
+          </div>
+          <button class="primary" type="submit" id="check-run">开始体检</button>
+        </div>
+        <p class="error" id="check-error" role="alert" hidden></p>
+      </form>
+      <div class="result" id="check-result" aria-live="polite" hidden></div>
+    </section>
+
+    <section class="panel" id="panel-review" role="tabpanel" aria-labelledby="tab-review" hidden>
+      <form class="form" id="review-form" novalidate>
+        <label class="field" for="review-question">
+          <span class="field-label">原问题</span>
+          <textarea id="review-question" rows="4" placeholder="你上一轮问 AI 的那句话。"></textarea>
+        </label>
+        <label class="field" for="review-answer">
+          <span class="field-label">AI 的回答</span>
+          <textarea id="review-answer" rows="6" placeholder="把它的回答贴进来，太长可以只贴关键部分。"></textarea>
+        </label>
+        <label class="field" for="review-wanted">
+          <span class="field-label">我本来想要什么（可选）</span>
+          <textarea id="review-wanted" rows="2" placeholder="例如：我想要能直接跑的三步方案，而不是概念解释。"></textarea>
+        </label>
+        <label class="field" for="review-problem">
+          <span class="field-label">哪里不对</span>
+          <select id="review-problem">
+            <option value="too_general">太泛</option>
+            <option value="off_topic">跑题</option>
+            <option value="wrong_format">格式不对</option>
+            <option value="unverifiable">无法验证</option>
+            <option value="missing_steps">缺少步骤</option>
+            <option value="other">其他</option>
+          </select>
+        </label>
+        <div class="actions">
+          <div class="llm-box">
+            <label class="check" for="review-llm"><input type="checkbox" id="review-llm" disabled> 用 LLM 生成追问</label>
+            <span class="hint" id="review-llm-hint">未配置 LLM；规则结果照常可用</span>
+          </div>
+          <button class="primary" type="submit" id="review-run">开始复盘</button>
+        </div>
+        <p class="error" id="review-error" role="alert" hidden></p>
+      </form>
+      <div class="result" id="review-result" aria-live="polite" hidden></div>
+    </section>
+
+    <section class="panel" id="panel-stats" role="tabpanel" aria-labelledby="tab-stats" hidden>
+      <div class="actions stats-actions">
+        <p class="hint">只统计元数据：分数、缺失要素、反模式；不保存问题原文。</p>
+        <button class="secondary" type="button" id="stats-run">刷新统计</button>
+      </div>
+      <p class="error" id="stats-error" role="alert" hidden></p>
+      <div class="result" id="stats-result" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">本地运行 · 默认不保存问题原文 · 开启 LLM 时只发送当前问题</div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
