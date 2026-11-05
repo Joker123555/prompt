@@ -15,10 +15,14 @@ entrypoints:
   test: "python -m unittest discover -s tests -t . -v"
   lint: "python tools/check_layers.py"
 
-git:                            # 托管红线：只允许公司 Gitea
-  host: git.zxyuanyu.com
-  owner: lijin
-  url: https://git.zxyuanyu.com/lijin/prompt.git
+git:                            # 托管：GitHub 主仓库，公司 Gitea 镜像；verify 会核对 .git/config
+  hosts:
+    - host: github.com
+      owner: Joker123555
+      url: https://github.com/Joker123555/prompt.git
+    - host: git.zxyuanyu.com
+      owner: lijin
+      url: https://git.zxyuanyu.com/lijin/prompt.git
 
 docs:
   root: docs

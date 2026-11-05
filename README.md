@@ -50,11 +50,13 @@ export QDOCTOR_LLM_MODEL=deepseek-chat
 
 ## 仓库
 
-托管在公司 Gitea：`https://git.zxyuanyu.com/lijin/prompt.git`（`git.zxyuanyu.com` / `lijin`）。**不要推到 github.com 或 gitee.com。**
+主仓库在 GitHub：`https://github.com/Joker123555/prompt.git`（`Joker123555`）。公司 Gitea `https://git.zxyuanyu.com/lijin/prompt.git` 保留为 `origin` 镜像。
 
 ```bash
-git clone https://git.zxyuanyu.com/lijin/prompt.git
+git clone https://github.com/Joker123555/prompt.git
 ```
+
+本机直连 github.com 不通，需为 git 配置系统代理 `http://127.0.0.1:7890`。
 
 ## 进一步阅读
 

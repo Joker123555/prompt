@@ -59,9 +59,10 @@ qdoctor/{history,llm} → qdoctor/{model,rules}（基础设施）
 3. **长输出落文件。** 构建、测试、抓取等超过约 100 行的输出，重定向到 `artifacts/` 下的文件再按需读取，不要用管道 tail/grep 截断在一次性的终端里。
 4. **不可自动跨越的动作。** 提交、推送、发布、删除远端资源、改生产配置——必须先得到人的明确同意，然后才执行。拿不到同意就停下来问。
 5. **不完全理解就不改。** 你是最后一道评审；看不懂的代码不要"顺手优化"。补丁小而聚焦，不夹带无关重构。
-6. **远端只有公司 Gitea。** 本仓库托管在 `https://git.zxyuanyu.com/lijin/prompt.git`（`git.zxyuanyu.com` / `lijin`）。禁止把代码推到 github.com、gitee.com、gitlab.com 等任何外部托管；`git remote` 里出现外部地址视为配置事故，先改回公司地址再做事。
-   - **首次推送**：人类已在 `https://git.zxyuanyu.com/repo/create` 建好同名私有仓库后，执行 `git push -u origin main`；远端已存在则跳过此步。
-   - **无人值守推送**（环境里有 `GITEA_TOKEN` 时，agent 可直接用）：`git push https://lijin:$GITEA_TOKEN@git.zxyuanyu.com/lijin/prompt.git main`。令牌只用于这一次 URL，**禁止写进 `.git/config`、文档或提交**；推送后 `git remote -v` 必须仍是不带令牌的地址。
+6. **远端：GitHub 为主，公司 Gitea 保留。** 主仓库是 `https://github.com/Joker123555/prompt.git`（`Joker123555`）；公司 Gitea `https://git.zxyuanyu.com/lijin/prompt.git`（`git.zxyuanyu.com` / `lijin`）保留为 `origin`，用于公司侧留档。除这两处外，禁止推送到 gitee.com、gitlab.com 等其他外部托管；`git remote` 里出现未声明的主机视为配置事故，先改回声明地址再做事。
+   - **默认推送**：`github` 已设为 `remote.pushDefault`，`git push` 即推 GitHub；公司镜像用 `git push origin main`。
+   - **直连代理**：本机直连 github.com 超时，必须走系统代理 `http://127.0.0.1:7890`；本仓库已用 `http.<url>.proxy` 为 github.com 固化。凭据由 `gh auth git-credential` 提供，**禁止把令牌写进 `.git/config`、文档或提交**。
+   - **无人值守推 Gitea**（环境里有 `GITEA_TOKEN` 时，agent 可直接用）：`git push https://lijin:$GITEA_TOKEN@git.zxyuanyu.com/lijin/prompt.git main`。令牌只用于这一次 URL，推送后 `git remote -v` 必须仍是不带令牌的地址。
    - 推送仍受铁律 4 约束：先提交、先跑测试、拿到人的明确同意，再推。
 
 ## 6. 测试

@@ -17,17 +17,31 @@
 
 ## 推送与托管
 
-远端只有一个：公司 Gitea `https://git.zxyuanyu.com/lijin/prompt.git`（`git.zxyuanyu.com` / `lijin`）。**禁止推到 github.com / gitee.com 等外部托管。**
+两个远端，GitHub 为主，公司 Gitea 为镜像：
 
-首次推送（服务器端还没有这个仓库时）：
+| 远程名 | 地址 | 用途 |
+|---|---|---|
+| `github` | `https://github.com/Joker123555/prompt.git` | 主仓库，已设为 `remote.pushDefault` |
+| `origin` | `https://git.zxyuanyu.com/lijin/prompt.git` | 公司侧留档 |
 
-1. 人类在 `https://git.zxyuanyu.com/repo/create` 建同名 **Private** 仓库（不要勾初始化 README，否则要处理分叉历史）；
-2. 本地执行 `git push -u origin main`；
+除这两处外，禁止推送到 gitee.com、gitlab.com 等其他外部托管。
+
+每次发布：
+
+1. 跑测试与依赖检查，全绿；
+2. `git push github main`（`git push` 默认即推这里）；
+3. 需要公司侧同步时再 `git push origin main`。
+
+首次推送（远端还没有这个仓库时）：
+
+1. 人类在 `https://github.com/Joker123555/prompt` 建同名仓库（不要勾初始化 README，否则要处理分叉历史）；
+2. 本地执行 `git push -u github main`；
 3. 推送前需人工批准（见 AGENTS.md 铁律 4）。
 
-凭据怎么来（三选一）：
+凭据怎么来：
 
-- **一次性令牌 URL**（适合 agent / 无人值守）：`git push https://<owner>:<令牌>@git.zxyuanyu.com/<owner>/<repo>.git main`，令牌只在这一次命令里，不落盘。
+- **GitHub**：`gh auth login` 后由 `gh auth git-credential` 提供，本仓库已配置 `credential.<url>.helper`，令牌不落盘；直连超时，本仓库已用 `http.<url>.proxy` 指向 `http://127.0.0.1:7890`。
+- **Gitea 一次性令牌 URL**（适合 agent / 无人值守）：`git push https://<owner>:<令牌>@git.zxyuanyu.com/<owner>/<repo>.git main`，令牌只在这一次命令里，不落盘。
 - **Windows 凭据管理器**（适合人）：先 `git config --global credential.helper wincred`，再 `git push -u origin main` 输一次用户名与令牌，之后不再问。
 - **明文存储**（最后手段）：`git config --global credential.helper store` 会把令牌明文写进 `~/.git-credentials`，多人机器不要用。
 

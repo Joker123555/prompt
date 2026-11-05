@@ -492,20 +492,30 @@ def check_markers(root: Path, rep: Report) -> None:
         rep.ok("标记", "marker 区块成对出现")
 
 
-BANNED_HOSTS = ("github.com", "gitee.com", "gitlab.com", "bitbucket.org", "codeberg.org")
+BANNED_HOSTS = ("gitee.com", "gitlab.com", "bitbucket.org", "codeberg.org")
+
+
+def _declared_git_hosts(cfg: dict) -> list[str]:
+    """从 blueprint.yaml 读允许的托管主机；兼容旧的单主机写法。"""
+    declared = cfg.get("git") or {}
+    if not isinstance(declared, dict):
+        return ["git.zxyuanyu.com"]
+    entries = declared.get("hosts")
+    if isinstance(entries, list):
+        hosts = [str(e.get("host") or "").strip().lower() for e in entries if isinstance(e, dict)]
+        hosts = [h for h in hosts if h]
+        if hosts:
+            return hosts
+    host = str(declared.get("host") or "").strip().lower()
+    return [host] if host else ["git.zxyuanyu.com"]
 
 
 def check_git(cfg: dict, root: Path, rep: Report) -> None:
-    """托管红线：远端只允许公司 Gitea。"""
-    declared = cfg.get("git") or {}
-    expect = ""
-    if isinstance(declared, dict):
-        expect = str(declared.get("host") or "").strip()
-    if not expect:
-        expect = "git.zxyuanyu.com"
+    """托管红线：远端只允许 blueprint.yaml 声明的主机。"""
+    allowed = _declared_git_hosts(cfg)
     gitdir = root / ".git"
     if not gitdir.exists():
-        rep.warn("托管", "没有 .git：先 git init 并把 origin 设成 https://" + expect + "/<owner>/<repo>.git")
+        rep.warn("托管", "没有 .git：先 git init 并把 origin 设成 https://" + allowed[0] + "/<owner>/<repo>.git")
         return
     conf = gitdir / "config"
     if not conf.is_file():
@@ -514,7 +524,7 @@ def check_git(cfg: dict, root: Path, rep: Report) -> None:
     text = conf.read_text(encoding="utf-8", errors="replace")
     urls = re.findall(r"^\s*url\s*=\s*(\S+)", text, re.M)
     if not urls:
-        rep.warn("托管", "没有配置任何 remote（至少要有一个 origin）")
+        rep.warn("托管", "没有配置任何 remote（至少要有一个 remote）")
         return
     bad = 0
     for url in urls:
@@ -522,12 +532,12 @@ def check_git(cfg: dict, root: Path, rep: Report) -> None:
         hit = [h for h in BANNED_HOSTS if h in low]
         if hit:
             bad += 1
-            rep.error("托管", "远端指向外部托管 " + hit[0] + "：" + url + "（只允许公司 Gitea " + expect + "）")
-        elif expect not in low:
+            rep.error("托管", "远端指向外部托管 " + hit[0] + "：" + url + "（只允许 " + " / ".join(allowed) + "）")
+        elif not any(h in low for h in allowed):
             bad += 1
-            rep.error("托管", "远端主机不是声明的 " + expect + "：" + url)
+            rep.error("托管", "远端主机不在声明列表（" + " / ".join(allowed) + "）：" + url)
     if bad == 0:
-        rep.ok("托管", str(len(urls)) + " 个远端全部指向公司 Gitea（" + expect + "）")
+        rep.ok("托管", str(len(urls)) + " 个远端全部指向声明主机（" + " / ".join(allowed) + "）")
 
 
 def main(argv=None) -> int:
