@@ -1,0 +1,24 @@
+# 构建产物
+dist/
+build/
+target/
+*.pyc
+__pycache__/
+
+# 依赖
+node_modules/
+.venv/
+venv/
+
+# 长输出与临时产物（约定：长命令输出落这里，不进管道）
+artifacts/
+.out/
+
+# 本地环境
+.env
+.env.local
+.DS_Store
+Thumbs.db
+
+# blueprint 探明阶段的中间产物（profile.json 应提交，见下）
+.blueprint/scan/

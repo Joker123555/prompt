@@ -1,0 +1,39 @@
+{
+  "generated_at": "2026-11-05",
+  "tool": "project-blueprint",
+  "version": 1,
+  "project": "prompt",
+  "stack": "generic",
+  "tier": "S",
+  "mode": "create",
+  "deferred": false,
+  "entrypoints": {
+    "install": "（未指定技术栈，请手工填写）",
+    "build": "（未指定技术栈，请手工填写）",
+    "dev": "（未指定技术栈，请手工填写）",
+    "test": "（未指定技术栈，请手工填写）",
+    "lint": "（未指定技术栈，请手工填写）"
+  },
+  "modules": [],
+  "git": {
+    "host": "git.zxyuanyu.com",
+    "owner": "lijin",
+    "url": "https://git.zxyuanyu.com/lijin/prompt.git"
+  },
+  "generated": {
+    ".gitignore": "a3ff4970970d8c55360cde1ece13cc359398dda0ba5defb56c1375657ef00f5d",
+    ".gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "AGENTS.md": "6b7c0ae0f346de922e23069866c93acecd7aba24f7bdfaeef93b1c7393f6c90c",
+    "OWNERS.yaml": "59e3478a6560988cfe0cbd7affa5c1662cfb774d6df4fcea9cba059f43f0cdbe",
+    "README.md": "3b3bf638f638fdb540ff6cc40b7f719cfb47feb90dcd068e5832ef0fefa08a43",
+    "blueprint.yaml": "0d1d40a63977f9c67ee2e6a4523067358e592f372921ffe1492a967ff068b127",
+    "docs/architecture/directories.md": "8b72a32d98928c82fdeca8c3e9c048f26ea5bb96a4db87cd5efad64656b354c9",
+    "docs/decisions/README.md": "ea307f53f885aceeb617e60618ae06af959477e1b7fae462ae7b708c8c9c59b1",
+    "docs/guides/development.md": "f3fe639235f2780f2228aea0c63a20212719a230dd527cb41a5df8dd52625a5d",
+    "docs/guides/getting-started.md": "a7079b8ba015da8c50968897b9d71d2b3e4fa91994b6dcfd9781324234d23ea2",
+    "docs/guides/release.md": "3169b47e831ef7532e3841afc458587994e197e79144a51e0c80beb082b03d8d",
+    "docs/guides/testing.md": "118e247885dae0398cda541aea3e4d2e881b464b8ec2492556edb7adf5c0c7f6",
+    "docs/index.md": "7bebec40a4517be69b53e2677d1e7a105e11a8fe2bb1f03283d5b06459c8ae0c",
+    "tools/blueprint_verify.py": "a4e5b55a4ea05d7b376192f3ee8e63577d266f44aec4c68d49bafc641e96a9e7"
+  }
+}

@@ -1,0 +1,22 @@
+# OWNERS.yaml —— 归属与评审强度
+# 目的：把"改这些文件该找谁"变成一条命令，而不是靠问人。
+# 计算：python tools/reviewers.py <paths...>
+
+version: 1
+
+groups:                         # 组名 -> 成员。group 优先于个人：个人会离职、会休假
+  core: ["core"]
+
+modules:                        # 按 path glob 匹配；越具体的写在越前面
+  - path: "**"
+    owner: core
+    blocking: true
+  - path: "docs/**"
+    owner: core
+    sla_hours: 48
+
+# 规则
+# 1. owner 必须是上面 groups 里定义过的组名。
+# 2. glob 之间不要重叠：重叠处会出现"两个组都以为自己负责，实际谁都不看"。
+# 3. 关键模块标 blocking: true —— 没有该组批准不得合并。
+# 4. 每个文件都应该被某个 glob 命中；命中不了就是孤儿代码。

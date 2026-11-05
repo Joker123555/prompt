@@ -1,0 +1,41 @@
+# blueprint.yaml —— 项目声明（唯一事实源之一）
+# 严格模式：未知字段应报错，不要靠静默忽略过日子。
+# 校验：python tools/blueprint_verify.py
+
+version: 1
+project: prompt
+tier: S                  # S | M | L
+stack: generic                # ts | python | rust | generic
+
+# 入口命令：每条都必须真实存在，verify 会核对；不存在的命令不要写进来
+# 未指定技术栈：下面每一项都请填成你项目里真实可跑的命令，填不存在的命令会被 verify 判错
+# install: <install 命令>
+# build: <build 命令>
+# dev: <dev 命令>
+# test: <test 命令>
+# lint: <lint 命令>
+# entrypoints:
+#   install: ...
+#   build: ...
+
+git:                            # 托管红线：只允许公司 Gitea
+  host: git.zxyuanyu.com
+  owner: lijin
+  url: https://git.zxyuanyu.com/lijin/prompt.git
+
+docs:
+  root: docs
+  entry: docs/index.md
+
+modules:                        # verify 会扫描这些目录下的 MODULE.yaml
+  # S 档：先只靠目录与 AGENTS.md，等模块边界稳定后再加
+
+verify:
+  # 这些路径是被引用但允许不存在（生成物、约定目录、第三方缓存）
+  allow_missing:
+    - "artifacts/"
+    - "dist/"
+    - "build/"
+    - "target/"
+    - "node_modules/"
+    - ".git/"
