@@ -7,23 +7,30 @@
 
 ## 依赖方向
 
-（按实际架构填写：谁可以依赖谁，哪些方向禁止）
+```
+qdoctor/static → qdoctor/web（入口）
+qdoctor/__main__ → 以下所有
+qdoctor/{diagnose,rewrite,review} → qdoctor/{model,rules}（领域）
+qdoctor/{history,llm} → qdoctor/{model,rules}（基础设施）
+```
+
+领域层不得导入 `history` / `llm` / `web` / `__main__`；基础设施不得导入 `web` / `__main__`；任何模块不得引入第三方依赖。`python tools/check_layers.py` 会拦截违规 import。
 
 ## 加一个功能的标准动作
 
-1. 在领域层写规则与类型（不碰 I/O、不碰框架）；
-2. 在入口层装配，把外部能力注入进去；
-3. 在测试层加一个能失败的测试，再让它通过；
-4. 跑 （未指定技术栈，请手工填写），贴出真实输出；
+1. 需要新词表/新槽位时，先改 `qdoctor/rules.py`（数据），不要先改检测流程；
+2. 在 `diagnose` / `rewrite` / `review` 里写纯函数，不碰 I/O、不碰框架；
+3. 在 `tests/` 加一个能失败的测试，再让它通过；
+4. 跑 `python -m unittest discover -s tests -t . -v` 和 `python tools/check_layers.py`，贴出真实输出；
 5. 更新受影响的文档（就近写在模块的 docs/ 里）。
 
-## 增量构建
+## 增量开发
 
 ```bash
-（未指定技术栈，请手工填写）
+python -m qdoctor serve --port 8765
 ```
 
-以下情况增量不可靠，必须全量重来：改了 blueprint.yaml、改了锁文件、升级了工具链、改了代码生成器。
+改 `qdoctor/static/` 下的文件刷新浏览器即可；改 Python 文件需要重启进程。本项目没有编译产物，`python -m compileall -q qdoctor` 只做语法检查。
 
 ## 长输出
 
@@ -31,6 +38,6 @@
 
 ## 加依赖的原则
 
-- 能用一个函数解决的，不引依赖；
-- 引入后必须在本文档记一句"为什么是它"；
+- 本项目只允许标准库；`tools/check_layers.py` 会把第三方 import 判为失败；
+- 确实需要第三方库时，先在 ADR 里写清“为什么标准库不够”，再改分层检查的规则；
 - 依赖锁文件必须提交。

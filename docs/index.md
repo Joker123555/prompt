@@ -10,10 +10,19 @@
 ## 架构（系统由什么组成）
 
 <!-- blueprint:begin docs/architecture -->
-（生成后请用 5 行以内说清：系统由哪几层组成、每层的职责、依赖方向。写不出来说明架构还没定型，先别写长文。）
+- 入口层：`qdoctor/__main__.py`（CLI）与 `qdoctor/web.py`（本地 HTTP）。
+- 领域层：`diagnose` 检测槽位与反模式，`rewrite` 生成七段式改写稿，`review` 生成下一轮追问；全部是纯函数。
+- 数据层：`rules.py` 放槽位、词表与权重；校准只改数据，不改检测流程。
+- 基础设施：`history.py` 写本地 JSONL（只存元数据），`llm.py` 是可选的 OpenAI 兼容适配器。
+- 依赖方向：入口 → 领域/基础设施 → 数据；由 `tools/check_layers.py` 强制。
 <!-- blueprint:end docs/architecture -->
 
 每个目录一句话职责见 [目录职责](architecture/directories.md)；依赖方向见 [AGENTS.md](../AGENTS.md)。
+
+## 案例（真实对话复盘）
+
+- [从模糊意图到可验收请求](cases/0001-from-vague-intent-to-a-checkable-request.md) —— 做 qdoctor 这次对话的复盘：哪些动作起了作用，哪里漏了场景
+- [指令与素材：为什么 AI 把设计思路印在了页面上](cases/0002-instructions-vs-content.md) —— 长文本里“要求”和“文案”没分开
 
 ## 开发（改这类需求要动哪里）
 
